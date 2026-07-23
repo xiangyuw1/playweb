@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>无盔之服 - Minecraft 服务器</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+        min-height: 100vh;
+        color: #e8e8e8;
+        line-height: 1.8;
+    }
+
+    .container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 40px 20px;
+    }
+
+    /* 头部区域 */
+    .header {
+        text-align: center;
+        margin-bottom: 40px;
+        padding: 40px;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 20px;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .header h1 {
+        font-size: 4rem;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 10px;
+        text-shadow: 0 0 30px rgba(102, 126, 234, 0.3);
+    }
+
+    .header h2 {
+        font-size: 1.5rem;
+        font-weight: 500;
+        color: #b8b8d1;
+        margin-bottom: 20px;
+    }
+
+    .server-ip {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        background: rgba(102, 126, 234, 0.2);
+        padding: 12px 24px;
+        border-radius: 50px;
+        font-family: 'Consolas', 'Monaco', monospace;
+        font-size: 1.2rem;
+        color: #667eea;
+        border: 1px solid rgba(102, 126, 234, 0.3);
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .server-ip:hover {
+        background: rgba(102, 126, 234, 0.3);
+        transform: scale(1.02);
+    }
+
+    .copy-icon {
+        width: 18px;
+        height: 18px;
+        opacity: 0.7;
+    }
+
+    /* 服务器状态 */
+    .server-status {
+        display: inline-flex;
+        align-items: center;
+        padding: 12px 24px;
+        border-radius: 50px;
+        background: rgba(0, 0, 0, 0.3);
+        margin: 20px 0;
+        font-weight: 500;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .status-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        margin-right: 10px;
+        animation: pulse 2s infinite;
+    }
+
+    .status-online {
+        background-color: #4caf50;
+        box-shadow: 0 0 12px #4caf50;
+    }
+
+    .status-offline {
+        background-color: #f44336;
+        box-shadow: 0 0 12px #f44336;
+        animation: none;
+    }
+
+    .status-loading {
+        background-color: #ff9800;
+        box-shadow: 0 0 12px #ff9800;
+    }
+
+    @keyframes pulse {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.6; transform: scale(0.95); }
+    }
+
+    .player-count {
+        margin-left: 15px;
+        color: #a8a8c0;
+        padding-left: 15px;
+        border-left: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .version-badge {
+        display: inline-block;
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        padding: 6px 16px;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        color: #fff;
+        margin-top: 15px;
+    }
+
+    /* 卡片样式 */
+    .card {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 16px;
+        padding: 30px;
+        margin-bottom: 25px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        backdrop-filter: blur(10px);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    }
+
+    .card h2 {
+        font-size: 1.5rem;
+        margin-bottom: 20px;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .card h2::before {
+        content: '';
+        display: inline-block;
+        width: 4px;
+        height: 24px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 2px;
+    }
+
+    .card h3 {
+        font-size: 1.15rem;
+        margin: 25px 0 15px;
+        color: #b8b8d1;
+    }
+
+    .card p {
+        color: #a8a8c0;
+        margin-bottom: 15px;
+    }
+
+    .card ol, .card ul {
+        padding-left: 25px;
+        color: #a8a8c0;
+    }
+
+    .card li {
+        margin-bottom: 12px;
+    }
+
+    /* 警告文字 */
+    .warning {
+        color: #ff6b6b !important;
+        background: rgba(255, 107, 107, 0.1);
+        padding: 15px 20px;
+        border-radius: 10px;
+        border-left: 3px solid #ff6b6b;
+    }
+
+    .warning a {
+        color: #5dd8ff !important;
+        font-weight: 500;
+        text-decoration: underline;
+    }
+
+    .warning a:hover {
+        color: #8fe6ff !important;
+    }
+
+    /* 链接样式 */
+    a {
+        color: #667eea;
+        text-decoration: none;
+        transition: color 0.3s ease;
+    }
+
+    a:hover {
+        color: #8b9ff0;
+        text-decoration: underline;
+    }
+
+    /* 外部链接网格 */
+    .links-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 15px;
+        list-style: none;
+        padding: 0;
+    }
+
+    .links-grid li {
+        margin: 0;
+    }
+
+    .link-card {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 16px 20px;
+        background: rgba(102, 126, 234, 0.1);
+        border-radius: 12px;
+        border: 1px solid rgba(102, 126, 234, 0.2);
+        transition: all 0.3s ease;
+        color: #b8b8d1;
+    }
+
+    .link-card:hover {
+        background: rgba(102, 126, 234, 0.2);
+        transform: translateX(5px);
+        text-decoration: none;
+        color: #fff;
+    }
+
+    .link-icon {
+        font-size: 1.5rem;
+    }
+
+    /* 提示框 */
+    .note {
+        background: rgba(102, 126, 234, 0.1);
+        padding: 15px 20px;
+        border-radius: 10px;
+        border-left: 3px solid #667eea;
+        color: #b8b8d1;
+        font-size: 0.95rem;
+    }
+
+    /* 页脚 */
+    .footer {
+        text-align: center;
+        padding: 30px;
+        color: #666;
+        font-size: 0.9rem;
+    }
+
+    /* 响应式 */
+    @media (max-width: 600px) {
+        .header h1 {
+            font-size: 2.5rem;
+        }
+        .header h2 {
+            font-size: 1.2rem;
+        }
+        .container {
+            padding: 20px 15px;
+        }
+        .card {
+            padding: 20px;
+        }
+    }
+</style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>盔</h1>
+            <h2>欢迎来到无盔之服！</h2>
+            <div class="server-ip" onclick="copyIP()" title="点击复制">
+                <span>play.lostrain.xyz</span>
+                <svg class="copy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                </svg>
+            </div>
+            <div>
+                <div class="server-status">
+                    <span class="status-dot status-loading" id="statusDot"></span>
+                    <span id="statusText">正在检测服务器状态...</span>
+                    <span class="player-count" id="playerCount"></span>
+                </div>
+            </div>
+            <div class="version-badge">Java 26.1.2</div>
+        </header>
+
+        <div class="card">
+            <h2>连接方法</h2>
+            <ol>
+                <li>下载您喜欢的 Minecraft 启动器和客户端，服务器核心版本为 26.1.2，建议您的客户端版本与服务器版本一致。服务器已安装 ViaVersion 插件，理论上支持任何版本号大于26.1.2的正式版客户端加入</li>
+                <li class="warning">服务器已开启正版验证，请使用正版账号登录并启动游戏</li>
+                <li>直接在多人游戏界面输入服务器地址 <code style="background: rgba(102, 126, 234, 0.2); padding: 2px 8px; border-radius: 4px;">play.lostrain.xyz</code> 即可加入。</li>
+            </ol>
+        </div>
+
+        <div class="card">
+            <h2>关于服务器</h2>
+            <p>本服务器主要是跟人游玩及和朋友小团体游玩，当然陌生人也欢迎加入。</p>
+            <p>本服务器托管于一台联想小新V1000旧笔记本上，该笔记本发布于2014年，搭载Intel(R) Core(TM) i7-4510U 处理器，最开始只有4G运行内存，于2025年暑假我在拼多多以34.5元购入第二根8G海力士内存条，于是乎目前的内存是12G，终于能开大视距了。但是受限于CPU性能，跑图该卡还是卡。</p>
+            <p style="font-size: 0.9rem; color: #888;">（写这个页面主要是因为有的人总喜欢直接点 QQ 或微信聊天框的链接，不知道把 IP 输到游戏里面玩，给你们个提示罢了 😄）</p>
+        </div>
+
+        <div class="card">
+            <h2>外部链接</h2>
+            <ul class="links-grid">
+                <li><a href="https://www.minecraft.net/zh-hans/download" target="_blank" rel="noopener noreferrer" class="link-card">
+                    <span class="link-icon">🎮</span>
+                    <span>Minecraft 官方下载</span>
+                </a></li>
+                <li><a href="https://afdian.com/p/0164034c016c11ebafcb52540025c377" target="_blank" rel="noopener noreferrer" class="link-card">
+                    <span class="link-icon">🚀</span>
+                    <span>PCL 启动器</span>
+                </a></li>
+                <li><a href="https://hmcl.huangyuhui.net/" target="_blank" rel="noopener noreferrer" class="link-card">
+                    <span class="link-icon">🎯</span>
+                    <span>HMCL 启动器</span>
+                </a></li>
+                <li><a href="https://tailscale.com/" target="_blank" rel="noopener noreferrer" class="link-card">
+                    <span class="link-icon">🔒</span>
+                    <span>Tailscale 官网</span>
+                </a></li>
+            </ul>
+        </div>
+
+        <footer class="footer">
+            无盔之服 © 2026
+        </footer>
+    </div>
+
+    <script>
+        async function checkServerStatus() {
+            const statusDot = document.getElementById('statusDot');
+            const statusText = document.getElementById('statusText');
+            const playerCount = document.getElementById('playerCount');
+            
+            try {
+                const response = await fetch('/api/status.php');
+                const data = await response.json();
+                
+                if (data.online) {
+                    statusDot.className = 'status-dot status-online';
+                    statusText.textContent = '服务器在线';
+                    playerCount.textContent = `在线玩家: ${data.players.online}/${data.players.max}`;
+                } else {
+                    statusDot.className = 'status-dot status-offline';
+                    statusText.textContent = '服务器离线';
+                    playerCount.textContent = '';
+                }
+            } catch (error) {
+                statusDot.className = 'status-dot status-offline';
+                statusText.textContent = '无法获取状态';
+                playerCount.textContent = '';
+            }
+        }
+        
+        function copyIP() {
+            navigator.clipboard.writeText('play.lostrain.xyz').then(() => {
+                const ipEl = document.querySelector('.server-ip span');
+                const originalText = ipEl.textContent;
+                ipEl.textContent = '已复制!';
+                setTimeout(() => {
+                    ipEl.textContent = originalText;
+                }, 1500);
+            });
+        }
+        
+        // 页面加载时检测状态
+        checkServerStatus();
+        // 每60秒自动刷新状态
+        setInterval(checkServerStatus, 60000);
+    </script>
+</body>
+</html>
